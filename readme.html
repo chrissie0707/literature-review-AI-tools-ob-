@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Easy AI Literature Review Tool</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        margin: 0;
+        padding: 0;
+        background-color: #f8f9fa;
+        color: #333;
+    }
+    header {
+        background: #E0F2F7;
+        color: #007898;
+        padding: 1rem 2rem;
+        text-align: center;
+    }
+    main {
+        max-width: 900px;
+        margin: auto;
+        padding: 2rem;
+        background: #fff;
+    }
+    h1, h2, h3 {
+        color: #007899;
+    }
+    pre {
+        background: #f4f4f4;
+        padding: 1rem;
+        overflow-x: auto;
+        border-radius: 5px;
+    }
+    code {
+        background: #f4f4f4;
+        padding: 2px 4px;
+        border-radius: 4px;
+    }
+    strong {
+        font-weight: bold;
+    }
+    .diagram {
+        background: #fff3cd;
+        border: 1px solid #ffeeba;
+        padding: 1rem;
+        margin: 1rem 0;
+        font-family: monospace;
+        white-space: pre;
+        overflow-x: auto;
+    }
+    footer {
+        text-align: center;
+        padding: 1rem;
+        margin-top: 2rem;
+        background: #f1f1f1;
+        font-size: 0.9rem;
+        color: #555;
+    }
+</style>
+</head>
+<body>
+<header>
+    <h1><strong>Easy AI Literature Review Tool</strong></h1>
+    <p><strong>Automated Literature Screening & Information Extraction</strong></p>
+</header>
+<main>
+    <section>
+       <h2>Description</h2>
+       <ul>
+         This tool is a Python-based assistant designed to help researchers quickly screen and analyze large batches of academic papers exported from databases like Web of Science (WOS). By loading CSV files with paper titles and abstracts, the tool uses AI to automatically identify which papers are relevant to your research field (e.g., Organizational Behavior), and then extracts key information such as research questions, findings, and variables. This automation saves you from manually reading through hundreds of papers, speeds up literature reviews (especially the initial screening and extraction steps), and might apply to the title screening stage of meta analysis..
+       <ul>
+    </section>
+
+    <section>
+        <h2> Features</h2>
+        <ul>
+            <li><strong>Customizable</strong> screening criteria</li>
+            <li><strong>Structured</strong> literature extraction</li>
+            <li>Multiple LLM provider support</li>
+            <li>Batch processing with progress tracking</li>
+            <li>Rate limiting to prevent API overload</li>
+        </ul>
+    </section>
+
+    <section>
+        <h2> Required Libraries</h2>
+<pre><code>pip install openai pandas tqdm</code></pre>
+    </section>
+
+    <section>
+        <h2> API Setup</h2>
+        <ol>
+            <li>Create an API key at <a href="https://openai.com/zh-Hans-CN/api/">OpenAI</a> or <a href="https://deepseek.com">DeepSeek</a> (you can find free choices at <a href="https://siliconflow.cn">SiliconFlow</a> or <a href="https://ai.google.dev">Google Gemini</a>).</li>
+            <li>Replace placeholders in your code:
+<pre><code>url = 'https://api.siliconflow.cn/v1/'
+api_key = 'sk-********'</code></pre>
+            </li>
+            <li>(Optional) Run local models like <strong>LLaMA</strong> or <strong>Qwen</strong>.</li>
+        </ol>
+    </section>
+
+    <section>
+        <h2> Usage</h2>
+      (you can find function details in Define Functions part)
+        <h3>1. Screening Papers</h3>
+      Review information of each paper and assign a flag value of 1 if it meets the prompt criteria, or 0 if it does not
+<pre><code>ob_flag = is_ob_paper(title, abstract)</code></pre>
+        <li>To adapt the prompts to your specific research topic, fing <code>is_ob_paper</code> in Define Fctions part of notebook. </li>
+
+        <h3>2. Extracting Literature Review Elements</h3>
+<pre><code>extraction = extract_lit_elements(title, abstract)</code></pre>
+
+        <h3>3. Batch Processing</h3>
+<pre><code>df = pd.read_csv("input.csv")
+df["OB"] = df.apply(lambda row: is_ob_paper(row["Title"], row["Abstract"]), axis=1)
+filtered_df = df[df["OB"] == 1]
+filtered_df["Extracted"] = filtered_df.apply(lambda row: extract_lit_elements(row["Title"], row["Abstract"]), axis=1)</code></pre>
+    </section>
+
+    <section>
+        <h2> Output</h2>
+        <p>The tool outputs structured columns:</p>
+        <table border="1" cellpadding="5" cellspacing="0">
+            <tr>
+                <th><strong>Research question</strong></th><th><strong>Finding Summary</strong></th><th><strong>Theory</strong></th><th><strong>IV</strong></th><th><strong>Mediator</strong></th><th><strong>DV</strong></th><th><strong>Moderator</strong></th>
+            </tr>
+            <tr><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td></tr>
+        </table>
+        <h3>1. Drop preliminary result columns by AI</h3>
+<pre><code>final_df = filtered_df.drop(columns=['OB',"Extracted"])</code></pre>
+        <h3>2. Write final results to excel or csv documents</h3>
+<pre><code>final_df.to_excel(output_path, index=False)</code></pre>
+    </section>
+
+    <section>
+        <h2> Customization</h2>
+        <ul>
+            <li>Edit screening prompt for your <strong>research domain</strong></li>
+            <li>Change <strong>extraction fields</strong> in <code>extract_lit_elements()</code></li>
+            <li>Adjust <code>time.sleep()</code> for API rate control</li>
+        </ul>
+    </section>
+
+    <section>
+        <h2> Notes</h2>
+        <ul>
+            <li>Free-tier APIs may have rate limits</li>
+            <li>Local models require extra setup</li>
+            <li>Ensure abstracts are pre-cleaned</li>
+        </ul>
+    </section>
+</main>
+<footer>
+    <p><strong>MIT License</strong> – Free for academic & personal use</p>
+</footer>
+</body>
+</html>
